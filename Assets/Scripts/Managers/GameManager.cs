@@ -1,16 +1,17 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum GameState {
     WaitingToStart,
     CountdownToStart,
     GamePlaying,
-    GamePause,
     GameCompleted,
-    GameFailure
 }
 public class GameManager : MonoBehaviour
 {
-    // [SerializeField] private GameObject interactStarterPlayer;
+    [SerializeField] private GameObject interactStarterPlayer;
+
+    [SerializeField] private UnityEvent OnCompletedGame;
     // [SerializeField] private GameObject pausePanel;
     // [SerializeField] private GameObject referencesKeyPausePanel;
     private GameState gameState = GameState.WaitingToStart;
@@ -28,37 +29,24 @@ public class GameManager : MonoBehaviour
         }
         // referencesKeyPausePanel.SetActive(false);
         EventsManager.OnInteractEventToStartGame.SubscribeMethod(OnInteract);
-        EventsManager.OnCountDownToEndLevelTime.SubscribeMethod((() =>
-        {
-            UpdateGameState(GameState.GameCompleted);
-        }));
         EventsManager.OnCountDownToStartLevelTime.SubscribeMethod((() =>
         {
             UpdateGameState(GameState.GamePlaying);
-        }));
-        EventsManager.OnExitArea.SubscribeMethod((() => {                    
-            UpdateGameState(GameState.GameCompleted);
         }));
         OnValueChanged();
     }
 
     private void OnValueChanged()
     {
-        if (gameState == GameState.GamePause)
-        {
-            // EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
-            EventsManager.OnDeactivateInputs.Invoke();
-            Time.timeScale = 0;
-        }
         if (gameState == GameState.WaitingToStart)
         {
             Time.timeScale = 1;
-            // interactStarterPlayer.SetActive(true);
+            interactStarterPlayer.SetActive(true);
         }
         else if (gameState == GameState.CountdownToStart)
         {
             Time.timeScale = 1;
-            // interactStarterPlayer.SetActive(false);
+            interactStarterPlayer.SetActive(false);
         }
         else if (gameState == GameState.GamePlaying)
         {
@@ -73,20 +61,14 @@ public class GameManager : MonoBehaviour
             // EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
             EventsManager.OnDeactivateInputs.Invoke();
             EventsManager.OnEndGame.Invoke();
-        }
-        else if (gameState == GameState.GameFailure)
-        {
-            Time.timeScale = 1;
-            // EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
-            EventsManager.OnDeactivateInputs.Invoke();
-            EventsManager.OnEndGame.Invoke();
+            OnCompletedGame.Invoke();
         }
     }
 
     private void OnInteract() {
         if (gameState == GameState.WaitingToStart) {
 
-            // interactStarterPlayer.SetActive(false);
+            interactStarterPlayer.SetActive(false);
             SetPlayerReady();
         }
     }
@@ -120,11 +102,22 @@ public class GameManager : MonoBehaviour
     //     gameState = !pausePanel.activeSelf ? GameState.GamePlaying : GameState.GamePause;
     //     OnValueChanged();
     // }
-    
 
+
+    public void BackToSelectGame()
+    {
+        ResetPlayersToManager();
+        LoadSceneManager.Instance.LoadNewScene(ScenesIndexes.CHARACTER_SELECT);
+    }
+    
     public void UpdateGameState(GameState gameGameState)
     {
         gameState = gameGameState;
         OnValueChanged();
+    }
+    
+    private void ResetPlayersToManager()
+    {
+        PlayerManager.Instance.ResetPlayersParentAndRemoveChild();
     }
 }

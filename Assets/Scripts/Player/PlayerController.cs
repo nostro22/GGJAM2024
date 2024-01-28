@@ -75,13 +75,19 @@ public class PlayerController : MonoBehaviour,IThrowable
     {
         inputController.OnMoveEvent += OnMove;
         inputController.OnDashEvent += OnDash;
-        inputController.OnInteractEvent += () => OnDeadEvent?.Invoke();
+        inputController.OnInteractEvent += OnInputControllerOnOnInteractEvent;
+    }
+
+    private void OnInputControllerOnOnInteractEvent()
+    {
+        OnDeadEvent?.Invoke();
     }
 
     public void OnDisableInputs()
     {
         inputController.OnMoveEvent -= OnMove;
         inputController.OnDashEvent -= OnDash;
+        inputController.OnInteractEvent -=OnInputControllerOnOnInteractEvent;
         OnMove(Vector2.zero);
     }
     
@@ -205,13 +211,21 @@ public class PlayerController : MonoBehaviour,IThrowable
     private void OnDead()
     {
         characterAnimator.OnDeadAnimation();
+        LeanTween.moveLocal(characterAnimator.gameObject, characterAnimator.transform.up * 15, 1f).setEaseSpring();
+        LeanTween.rotateAround(characterAnimator.gameObject, Vector3.forward, 360,1f).setEaseSpring();
         OnDisableInputs();
         StartCoroutine(DisablePlayer());
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     IEnumerator DisablePlayer()
     {
         yield return new WaitForSeconds(2);
+        GameManager.Instance.UpdateGameState(GameState.GameCompleted);
         gameObject.SetActive(false);
     }
 
