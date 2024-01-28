@@ -20,25 +20,40 @@ public class OnTriggerPush : MonoBehaviour
 
     private void OnTriggerEnter(Collider hit) {
         Debug.Log("Collisione");
-        if (hit.CompareTag("Hit")) {
-            Vector3 forceDirection = hit.transform.position - transform.position;
-            forceDirection.y = 0;
-            forceDirection.Normalize();
-            rb.AddForceAtPosition(-forceDirection, transform.position, ForceMode.Impulse);
-        } else if (hit.CompareTag("GoalBlue") || hit.CompareTag("GoalRed")) {
+        if (hit.CompareTag("GoalBlue") || hit.CompareTag("GoalRed")) {
             this.transform.position = respawnPoint.transform.position;
             this.rb.velocity = Vector3.zero;
-            // Detiene la rotación del objeto
+            // Detiene la rotaciÃ³n del objeto
             this.rb.angularVelocity = Vector3.zero;
             if (hit.CompareTag("GoalBlue")){
                 blueTeamGoals++;
                 if (blueTeamGoals == 3) {
-                    BlueWin.Invoke();
+                    if (PlayerManager.Instance.players.Count == 4)
+                    {
+                        PlayerManager.Instance.players[2].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
+                        PlayerManager.Instance.players[0].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();   
+                    }
+                    if (PlayerManager.Instance.players.Count == 2)
+                    {
+                        PlayerManager.Instance.players[0].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();   
+                    }
+                    if (PlayerManager.Instance.players.Count == 1)
+                    {
+                       GameManager.Instance.UpdateGameState(GameState.GameCompleted);
+                    }
                 }
             } else {
                 redTeamGoals++;
                 if (redTeamGoals == 3) {
-                    RedWin.Invoke();
+                    if (PlayerManager.Instance.players.Count == 4)
+                    {
+                        PlayerManager.Instance.players[1].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
+                        PlayerManager.Instance.players[3].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
+                    }
+                    if (PlayerManager.Instance.players.Count == 2)
+                    {
+                        PlayerManager.Instance.players[1].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
+                    }
                 }
             }
 

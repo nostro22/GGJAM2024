@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - SimpleObjects
+  - Hit
+  - GoalBlue
+  - GoalRed
   layers:
   - Default
   - TransparentFX

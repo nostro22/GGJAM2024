@@ -9,8 +9,8 @@ public enum GameState {
 }
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private int playersInScene;
     [SerializeField] private GameObject interactStarterPlayer;
-
     [SerializeField] private UnityEvent OnCompletedGame;
     // [SerializeField] private GameObject pausePanel;
     // [SerializeField] private GameObject referencesKeyPausePanel;
@@ -65,6 +65,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void RestPlayer()
+    {
+        playersInScene--;
+        if (playersInScene <= 0)
+        {
+            playersInScene = 0;
+            UpdateGameState(GameState.GameCompleted);
+        }
+    }
+
+    public void SetPlayer()
+    {
+        playersInScene++;
+    }
+    
     private void OnInteract() {
         if (gameState == GameState.WaitingToStart) {
 

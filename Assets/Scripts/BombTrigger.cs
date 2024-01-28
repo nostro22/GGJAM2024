@@ -13,7 +13,8 @@ public class BombTrigger : MonoBehaviour
         if(other.CompareTag("Player")){
             if(animator != null)
             {
-            animator.SetTrigger("attack01");
+                animator.SetTrigger("attack01");
+                other.GetComponent<PlayerController>().OnDeadEvent.Invoke();
             }
         }
 

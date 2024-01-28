@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3734633751806842903}
   - component: {fileID: 4528945255149539022}
   m_Layer: 0
-  m_Name: GameplayPlayerBehaviour
+  m_Name: GameplayPlayerBehaviourBoom
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,6 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6119c052fe21174c96675add010df8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameType: 1
   playerParameters: {fileID: 11400000, guid: 2d26e3e294ff6be408960275939ed484, type: 2}
   movementType: 0
   visualIconGround: {fileID: 3734633751806842903}

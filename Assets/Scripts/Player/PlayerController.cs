@@ -5,6 +5,11 @@ using UI.Gameplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum GameType
+{
+    football,boom
+}
+
 public enum MovementType
 {
     Normal,Car,OnlyRotate
@@ -12,6 +17,7 @@ public enum MovementType
 
 public class PlayerController : MonoBehaviour,IThrowable
 {
+    [SerializeField] private GameType gameType;
     [SerializeField] private PlayerParametersSO playerParameters;
     [SerializeField] private MovementType movementType;
     [SerializeField] private VisualIconMark visualIconGround;
@@ -44,7 +50,6 @@ public class PlayerController : MonoBehaviour,IThrowable
         Initialize();
     }
     
-
     public void Initialize()
     {
         characterAnimator = GetComponentInChildren<CharacterAnimator>();
@@ -52,6 +57,8 @@ public class PlayerController : MonoBehaviour,IThrowable
         OnStunEvent += characterAnimator.OnStunAnimation;
         OnDeadEvent += characterAnimator.OnStunAnimation;
         OnDeadEvent += OnDead;
+        if (gameType == GameType.boom)
+            GameManager.Instance.SetPlayer();
         OnAttackEvent += characterAnimator.OnAttackAnimation;
         characterController.enabled = true;
         UpdateMovement();
@@ -66,6 +73,7 @@ public class PlayerController : MonoBehaviour,IThrowable
     {
         IndexPlayer = index;
     }
+    
 
     public void SetColorPlayerBehaviour(Color color)
     {
@@ -75,19 +83,14 @@ public class PlayerController : MonoBehaviour,IThrowable
     {
         inputController.OnMoveEvent += OnMove;
         inputController.OnDashEvent += OnDash;
-        inputController.OnInteractEvent += OnInputControllerOnOnInteractEvent;
     }
 
-    private void OnInputControllerOnOnInteractEvent()
-    {
-        OnDeadEvent?.Invoke();
-    }
+ 
 
     public void OnDisableInputs()
     {
         inputController.OnMoveEvent -= OnMove;
         inputController.OnDashEvent -= OnDash;
-        inputController.OnInteractEvent -=OnInputControllerOnOnInteractEvent;
         OnMove(Vector2.zero);
     }
     
@@ -225,7 +228,14 @@ public class PlayerController : MonoBehaviour,IThrowable
     IEnumerator DisablePlayer()
     {
         yield return new WaitForSeconds(2);
-        GameManager.Instance.UpdateGameState(GameState.GameCompleted);
+        if (gameType == GameType.boom)
+        {
+            GameManager.Instance.RestPlayer();
+        }
+        else
+        {
+            GameManager.Instance.UpdateGameState(GameState.GameCompleted); 
+        }
         gameObject.SetActive(false);
     }
 
