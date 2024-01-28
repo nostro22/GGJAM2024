@@ -213,6 +213,7 @@ public class PlayerController : MonoBehaviour,IThrowable
 
     private void OnDead()
     {
+        AudioManager.Instance.PlayEffectPlayerHitWithCar();
         characterAnimator.OnDeadAnimation();
         LeanTween.moveLocal(characterAnimator.gameObject, characterAnimator.transform.up * 15, 1f).setEaseSpring();
         LeanTween.rotateAround(characterAnimator.gameObject, Vector3.forward, 360,1f).setEaseSpring();

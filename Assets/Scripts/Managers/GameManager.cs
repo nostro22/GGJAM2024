@@ -68,9 +68,9 @@ public class GameManager : MonoBehaviour
     public void RestPlayer()
     {
         playersInScene--;
-        if (playersInScene <= 0)
+        if (playersInScene <= 1)
         {
-            playersInScene = 0;
+            playersInScene = 1;
             UpdateGameState(GameState.GameCompleted);
         }
     }

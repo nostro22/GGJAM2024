@@ -50,6 +50,8 @@ public class TraficManager : MonoBehaviour
                     turnoff();
                     leftRed.SetActive(true);
                     upGreen.SetActive(true);
+                    yield return new WaitForSeconds(Random.Range(1, 2));
+                    AudioManager.Instance.PlayEffectCarRun();
                     cars.SetTrigger("UP");
                     break;
                 case 2:
@@ -60,6 +62,8 @@ public class TraficManager : MonoBehaviour
                     turnoff();
                 leftRed.SetActive(true);
                 upGreen.SetActive(true);
+                    yield return new WaitForSeconds(Random.Range(1, 2));
+                    AudioManager.Instance.PlayEffectCarRun();
                     cars.SetTrigger("DOWN");
                     break;
                 case 3:
@@ -70,6 +74,8 @@ public class TraficManager : MonoBehaviour
                     turnoff();
                     upRed.SetActive(true);
                     leftGreen.SetActive(true);
+                    yield return new WaitForSeconds(Random.Range(1, 2));
+                    AudioManager.Instance.PlayEffectCarRun();
                     cars.SetTrigger("LEFT");
                     break;
                 case 4:
@@ -80,6 +86,8 @@ public class TraficManager : MonoBehaviour
                     turnoff();
                     upRed.SetActive(true);
                     leftGreen.SetActive(true);
+                    yield return new WaitForSeconds(Random.Range(1, 2));
+                    AudioManager.Instance.PlayEffectCarRun();
                     cars.SetTrigger("RIGHT");
                     break;
                 case 5:

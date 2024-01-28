@@ -196,7 +196,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
         SetIKConstraints();
         objectToDrag.TryGetComponent<IDraggable>(out var draggable);
         draggable.OnDrag();
-        AudioManager.Instance.PlayEffectPlayerDrag();
        objectToDrag = null;
     }
 
@@ -231,7 +230,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
             draggable.OnDrop();
             objectDragged.SetActive(true);
             objectDragged = null;
-            AudioManager.Instance.PlayEffectPlayerDrop();
             interactableLayerMask = playerParametersSo.defaultInteractLayer;   
     }
 
@@ -247,7 +245,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
                 objectDragged.SetActive(true);
                 throwable.OnThrow(gameObject);
                 objectDragged = null;
-                AudioManager.Instance.PlayEffectPlayerThrow();
                 interactableLayerMask = playerParametersSo.defaultInteractLayer;
             }
             else

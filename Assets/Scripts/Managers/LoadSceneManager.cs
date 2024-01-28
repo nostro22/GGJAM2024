@@ -87,6 +87,7 @@ public enum ScenesIndexes
     MAIN_MENU,
     CHARACTER_SELECT,
     SELECTGAME,
-    GAMEPLAY,
+    BOOM,
+    FOOTBALL,
     NONE
 }

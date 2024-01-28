@@ -19,6 +19,8 @@ public class CharacterSelectDisplay : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.Instance.StopEffects();
+        AudioManager.Instance.StopMusic();
         PlayerInputManager.instance.joinBehavior = PlayerJoinBehavior.JoinPlayersWhenJoinActionIsTriggered;
         PlayerInputManager.instance.joinAction = joinActionProperty;
         PlayerInputManager.instance.EnableJoining();
@@ -50,7 +52,7 @@ public class CharacterSelectDisplay : MonoBehaviour
     {
         foreach (var playerCard in playerCards)
             playerCard.RemoveInputCard();
-        LoadSceneManager.Instance.LoadNewScene(ScenesIndexes.GAMEPLAY);
+        LoadSceneManager.Instance.LoadNewScene(ScenesIndexes.SELECTGAME);
     }
 
     private void OnDestroy()

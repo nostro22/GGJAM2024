@@ -13,7 +13,8 @@ public class MainMenuDisplay : MonoBehaviour
         menuPanel.SetActive(true);
         optionsPanel.SetActive(false);
         startPanel.SetActive(false);
-        // AudioManager.Instance.PlayMusicMainMenu();
+        AudioManager.Instance.StopMusic();
+        AudioManager.Instance.StopEffects();
         PlayerInputManager.instance.DisableJoining();
         if (PlayerManager.Instance.firstPlayer) return;
         menuPanel.SetActive(false);

@@ -3,24 +3,19 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     [Header("Music")]
-    [SerializeField] private AudioClip musicMenuOffice;
-    [SerializeField] private AudioClip musicGameplay;
+    [SerializeField] private AudioClip musicTraffic;
+    [SerializeField] private AudioClip musicFootball;
+    [SerializeField] private AudioClip musicAmbientFootball;
     [Header("Gameplay Effects")]
-    [SerializeField] private AudioClip waterSplash;
-    [SerializeField] private AudioClip playerStun;
-    [SerializeField] private AudioClip playerDash;
-    [SerializeField] private AudioClip playerDrag;
-    [SerializeField] private AudioClip playerDrop;
-    [SerializeField] private AudioClip playerThrow;
-    [SerializeField] private AudioClip completedObjectClean;
-    [SerializeField] private AudioClip warningEvent;
-    [SerializeField] private AudioClip breakObject;
-    [SerializeField] private AudioClip spawnObject;
-    [Header("UI Effects")]
-    [SerializeField] private AudioClip completedAllCleans;
+    [SerializeField] private AudioClip ballHit;
+    [SerializeField] private AudioClip carRun;
+    [SerializeField] private AudioClip explotionGranade;
+    [SerializeField] private AudioClip playerHitWithCar;
+    [SerializeField] private AudioClip ballgoal;
     [Header("References")]
     [SerializeField] private AudioSource music;
     [SerializeField] private AudioSource effects;
+    [SerializeField] private AudioSource musicAmbient;
     public static AudioManager Instance { get; private set; }
     private void Awake()
     {
@@ -35,78 +30,57 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayMusicMainMenu()
+    public void PlayMusicFootball()
     {
-        if(music.clip == musicMenuOffice) return;
-        music.clip = musicMenuOffice;
+        if(music.clip == musicTraffic) return;
+        music.clip = musicFootball;
         music.Play();
     }
     
-    public void PlayMusicGameplay()
+    public void PlayMusicAmbientFootball()
     {
-        if(music.clip == musicGameplay) return;
-        music.clip = musicGameplay;
+        if(musicAmbient.clip == musicAmbientFootball) return;
+        musicAmbient.clip = musicAmbientFootball;
+        musicAmbient.Play();
+    }
+    
+    public void PlayMusicTraffic()
+    {
+        if(music.clip == musicTraffic) return;
+        music.clip = musicTraffic;
         music.Play();
     }
     
-    public void PlayEffectWaterSplash()
+    public void PlayEffectBallHit()
     {
-        effects.PlayOneShot(waterSplash);
+        effects.PlayOneShot(ballHit);
     }
     
-    public void PlayEffectPlayerStun()
+    public void PlayEffectCarRun()
     {
-        effects.PlayOneShot(playerStun);
+        effects.PlayOneShot(carRun);
+    }
+        
+    public void PlayEffectBombGranade()
+    {
+        effects.PlayOneShot(explotionGranade);
     }
     
-    public void PlayEffectPlayerDash()
+    public void PlayEffectGoal()
     {
-        effects.PlayOneShot(playerDash);
+        effects.PlayOneShot(ballgoal);
     }
-    
-    public void PlayEffectPlayerThrow()
+
+    public void PlayEffectPlayerHitWithCar()
     {
-        effects.PlayOneShot(playerThrow);
+        effects.PlayOneShot(explotionGranade);
     }
-    
-    public void PlayEffectPlayerDrag()
-    {
-        effects.PlayOneShot(playerDrag);
-    }
-    
-    public void PlayEffectPlayerDrop()
-    {
-        effects.PlayOneShot(playerDrop);
-    }
-    
-    public void PlayEffectCompleteObjectClean()
-    {
-        effects.PlayOneShot(completedObjectClean);
-    }
-    
-    public void PlayEffectCompleteAllClean()
-    {
-        effects.PlayOneShot(completedAllCleans);
-    }
-    
-    public void PlayEffectWarningEvent()
-    {
-        effects.PlayOneShot(warningEvent);
-    }
-    
-    public void PlayEffectSpawnObject()
-    {
-        effects.PlayOneShot(spawnObject);
-    }
-    
-    public void PlayEffectBreakObject()
-    {
-        effects.PlayOneShot(breakObject);
-    }
+
     
     public void StopMusic()
     {
         music.Stop();
+        musicAmbient.Stop();
     }
     public void StopEffects()
     {

@@ -7,7 +7,9 @@ using UnityEngine.SceneManagement;
 public class PlayerSpawner : MonoBehaviour
 {
     public static PlayerSpawner Instance;
+
     [Header("Characters References")]
+    [SerializeField] private GameType gameType;
     [SerializeField] private CharacterDatabase characterDatabase;
     [SerializeField] private GameObject playerGameplayBehavoiur;
     [Header("Players Spawn Points")]
@@ -36,6 +38,14 @@ public class PlayerSpawner : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         foreach (var basePlayer in PlayerManager.Instance.players)
             InstanceOnonPlayerJoined(basePlayer.GetComponent<PlayerInput>());
+        if(gameType == GameType.boom)
+            AudioManager.Instance.PlayMusicTraffic();
+        if (gameType == GameType.football)
+        {
+            AudioManager.Instance.PlayMusicFootball();
+            AudioManager.Instance.PlayMusicAmbientFootball();
+        }
+        
     }
 
     private void InstanceOnonPlayerJoined(PlayerInput obj)
@@ -76,7 +86,7 @@ public class PlayerSpawner : MonoBehaviour
             var characterInstantiate = Instantiate(character.GameplayPrefab,Vector3.zero, Quaternion.identity);
             characterInstantiate.transform.SetParent(playerBehaviour.transform,false);
             indexPlayer++;
-            var colorPlayer = UtilsPlayer.GetColoByIndex(indexPlayer);
+            var colorPlayer = UtilsPlayer.GetColoByIndex(indexPlayer,gameType);
             playerBehaviour.GetComponent<PlayerController>().SetIndexPlayer(indexPlayer);
             playerBehaviour.GetComponent<PlayerController>().SetColorPlayerBehaviour(colorPlayer);
         }

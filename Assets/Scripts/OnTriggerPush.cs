@@ -20,22 +20,24 @@ public class OnTriggerPush : MonoBehaviour
 
     private void OnTriggerEnter(Collider hit) {
         Debug.Log("Collisione");
+        
         if (hit.CompareTag("GoalBlue") || hit.CompareTag("GoalRed")) {
+            AudioManager.Instance.PlayEffectGoal();
             this.transform.position = respawnPoint.transform.position;
             this.rb.velocity = Vector3.zero;
-            // Detiene la rotación del objeto
+            // Detiene la rotaci�n del objeto
             this.rb.angularVelocity = Vector3.zero;
             if (hit.CompareTag("GoalBlue")){
                 blueTeamGoals++;
                 if (blueTeamGoals == 3) {
-                    if (PlayerManager.Instance.players.Count == 4)
+                    if (PlayerManager.Instance.players.Count == 4 || PlayerManager.Instance.players.Count == 3 )
                     {
-                        PlayerManager.Instance.players[2].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
-                        PlayerManager.Instance.players[0].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();   
+                        PlayerManager.Instance.players[2].GetComponentInChildren<PlayerController>().OnDeadEvent.Invoke();
+                        PlayerManager.Instance.players[0].GetComponentInChildren<PlayerController>().OnDeadEvent.Invoke();   
                     }
                     if (PlayerManager.Instance.players.Count == 2)
                     {
-                        PlayerManager.Instance.players[0].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();   
+                        PlayerManager.Instance.players[0].GetComponentInChildren<PlayerController>().OnDeadEvent.Invoke();   
                     }
                     if (PlayerManager.Instance.players.Count == 1)
                     {
@@ -47,16 +49,21 @@ public class OnTriggerPush : MonoBehaviour
                 if (redTeamGoals == 3) {
                     if (PlayerManager.Instance.players.Count == 4)
                     {
-                        PlayerManager.Instance.players[1].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
-                        PlayerManager.Instance.players[3].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
+                        PlayerManager.Instance.players[1].GetComponentInChildren<PlayerController>().OnDeadEvent.Invoke();
+                        PlayerManager.Instance.players[3].GetComponentInChildren<PlayerController>().OnDeadEvent.Invoke();
                     }
-                    if (PlayerManager.Instance.players.Count == 2)
+           
+                    if (PlayerManager.Instance.players.Count == 2 || PlayerManager.Instance.players.Count == 3)
                     {
-                        PlayerManager.Instance.players[1].GetComponentInChildren<PlayerController>().OnDeadEvent?.Invoke();
+                        PlayerManager.Instance.players[1].GetComponentInChildren<PlayerController>().OnDeadEvent.Invoke();
                     }
                 }
             }
 
+        }
+        else
+        {
+            AudioManager.Instance.PlayEffectBallHit();
         }
     }
 }
