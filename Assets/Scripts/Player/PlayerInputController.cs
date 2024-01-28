@@ -13,6 +13,7 @@ public class PlayerInputController : MonoBehaviour
     public event Action OnCancelInteractEvent;
     public event Action OnStartThrowEvent;
     public event Action OnExitThrowEvent;
+    public event Action OnJumpEvent;
     public event Action OnOpenPopupsEvent;
     public event Action OnCancelOpenPopupsEvent;
     #endregion
@@ -131,6 +132,14 @@ public class PlayerInputController : MonoBehaviour
         if (context.phase == InputActionPhase.Canceled)
         {
             OnCancelOpenPopupsEvent?.Invoke();
+        }
+    }
+    
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Started)
+        {
+            OnJumpEvent?.Invoke();
         }
     }
 

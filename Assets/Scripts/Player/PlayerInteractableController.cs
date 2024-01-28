@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using ScriptableObjects;
 using UI.Gameplay;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using VisualText = UI.Gameplay.VisualText;
 
@@ -26,7 +24,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
     [SerializeField] private float radiusObstacleCast;
     [FormerlySerializedAs("originBoxCleaningCast")] [SerializeField] private Transform originDragCast;
     [SerializeField] private float radiusDragCast;
-    [SerializeField] private GameObject arrowDashDirection;
     #region Interactuables
     private GameObject objectDragged;
     #endregion
@@ -35,6 +32,8 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
     [SerializeField] private LayerMask HitsAreaLayerMask;
     [SerializeField] private LayerMask NonInteractableLayerMask;
     #endregion
+
+    private bool isAttack;
     private VisualText visualText;
 
     private void Start()
@@ -56,7 +55,7 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
         EventsManager.OnActivateInputs.SubscribeMethod(OnEnableInputs);
         if(GameManager.Instance.IsGamePlaying()) OnEnableInputs();
         interactableLayerMask = playerParametersSo.defaultInteractLayer;
-        arrowDashDirection.SetActive(false);
+
     }
     private void OnDestroy()
     {   EventsManager.OnDeactivateInputs.RemoveOneShotMethod(OnDisableInputs);
@@ -98,19 +97,13 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
 
     private void OnUse()
     {
-        if (objectDragged == null) return;
-        if (objectDragged.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint))
-            characterAnimator.UpdateParentIK(targetConstraint,targetConstraint.isUssable ? 0: 1);
-        if(targetConstraint.isUssable) characterAnimator.UpdateToolLayerUse(targetConstraint.HandsPoserSO.animationLayerUse,1);
+        playerController.OnAttackEvent?.Invoke();
+        isAttack = true;
     }
 
     private void OnCancelUse()
     {
-
-        if (objectDragged == null) return;
-        if (objectDragged.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint)){}
-            characterAnimator.UpdateParentIK(targetConstraint,1);
-        characterAnimator.UpdateToolLayerUse(targetConstraint.HandsPoserSO.animationLayerUse,0);
+        
     }
     
     private void StartThrow()
@@ -131,72 +124,52 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
 
     private void CheckRaycastInteractable()
     {
-        #region Check Hits and Throwables Objects
-        var objectsFounded2 =  Physics.OverlapBoxNonAlloc(transform.position,Vector3.one*1.1f/2,collidersBuffer2,transform.rotation,HitsAreaLayerMask);
-        if (objectsFounded2 != 0)
-        {
-            for (int i = 0; i < objectsFounded2; i++)
-            {
-                var collider = collidersBuffer2[i];
-                if (collider.TryGetComponent<IThrowable>(out var oThrowable))
-                {
-                    if (!inStun)
-                    {
-                        if (oThrowable.InThrow && oThrowable.PlayerThrow != gameObject)
-                        {
-                            inStun = true;
-                            if(collider.TryGetComponent<Rigidbody>(out var rigidbody))
-                                rigidbody.velocity = Vector3.zero;
-                            StunEffect();
-                            StartCoroutine(ResetStun());   
-                        }        
-                    }    
-                }
-            }
-        }
-        #endregion
-        #region CheckObstacles
-        isPossibleThrow = Physics.Raycast(originRay.position, originRay.forward,1.4f, NonInteractableLayerMask);
-        #endregion
-        #region Check Objects Draggables
+        #region Check Attack
         var objectsFounded3 =  Physics.OverlapSphereNonAlloc(originDragCast.position+transform.forward,radiusDragCast,collidersBuffer3,interactableLayerMask);
 
         if (objectsFounded3 > 0)
         {
-            if (objectToDrag != collidersBuffer3[0].gameObject)
+            if (isAttack)
             {
-                if (collidersBuffer3[0].TryGetComponent<IDraggable>(out var interactable))
+                if (objectToDrag != collidersBuffer3[0].gameObject)
                 {
-                    if (objectToDrag)
+                    if (collidersBuffer3[0].CompareTag("SimpleObjects"))
                     {
-                        var oldVisualkey = objectToDrag.GetComponentInChildren<VisualInteractableKey>();
-                        if (oldVisualkey) oldVisualkey.Hide();
-                        objectToDrag = null;   
+                        Rigidbody rb = collidersBuffer3[0].attachedRigidbody;
+                        if (rb)
+                        {
+                            Vector3 forceDirection = collidersBuffer3[0].transform.position - transform.position;
+                            forceDirection.y = 0;
+                            forceDirection.Normalize();
+                            rb.AddForceAtPosition(forceDirection, transform.position, ForceMode.Impulse);
+                        }
                     }
-                    objectToDrag = collidersBuffer3[0].gameObject;
-                    var newVisualkey = objectToDrag.GetComponentInChildren<VisualInteractableKey>();
-                    if (newVisualkey) newVisualkey.Show(GetComponentInParent<PlayerInput>()); 
+
+                    if (collidersBuffer3[0].CompareTag("Player") && collidersBuffer3[0].gameObject != gameObject)
+                    {
+                        var playerToCollide = collidersBuffer3[0].GetComponent<PlayerInteractableController>();
+                        if (!playerToCollide.inStun)
+                        {
+                            playerToCollide.inStun = true;
+                            playerToCollide.StunEffect();
+                        }
+                    }
                 }
+
+                isAttack = false;
             }
-        }
-        else
-        {
-            if (objectToDrag)
-            {
-                var oldVisualkey = objectToDrag.GetComponentInChildren<VisualInteractableKey>();
-                if (oldVisualkey) oldVisualkey.Hide();
-                objectToDrag = null;   
-            }   
         }
         #endregion
     }
     
-    private void StunEffect()
+    public void StunEffect()
     {
+        Debug.Log("Stun");
         playerController.OnStunEvent?.Invoke();
-        AudioManager.Instance.PlayEffectPlayerStun();
+        // AudioManager.Instance.PlayEffectPlayerStun();
         if(visualText) visualText.Show(VisualTextType.Stun);
         particleStun.Play();
+        StartCoroutine(ResetStun());
     }
     public IEnumerator ResetStun()
     {
@@ -210,25 +183,14 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
         //Visual Ray
         Gizmos.color = Color.cyan;
         Gizmos.DrawRay(originRay.position,originRay.forward*1.4f);
-        //Visual CheckBox Obstacles
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(originObstaclesCast.position+transform.forward,radiusObstacleCast);
         //Visual Draggable Objects
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(originDragCast.position+transform.forward,radiusDragCast);
-        //Visual Hits and Throwables Objects
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position,Vector3.one*1.1f);
     }
     
     private void OnDragObject(GameObject gameObject)
     {
         objectDragged = gameObject;
-        if (arrowDashDirection.activeSelf)
-        {
-            playerController.UpdateMovementType(MovementType.Normal);
-            arrowDashDirection.SetActive(false);
-        }
         var newVisualkey = objectToDrag.GetComponentInChildren<VisualInteractableKey>();
         if (newVisualkey) newVisualkey.Hide();
         SetIKConstraints();
@@ -242,9 +204,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
     {
         if (objectToDrag.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint))
         {
-            characterAnimator.UpdateParentIK(targetConstraint,1);
-            if (targetConstraint.isUseAnimationEvent)
-                characterAnimator.AddAnimationActionEvent(targetConstraint.animationEventAction,targetConstraint.time,targetConstraint.animationName);
             if (objectToDrag.TryGetComponent<IParentableObject>(out var parentableObject))
                 parentableObject.SetParentObject(characterAnimator.gameObject);
         }
@@ -257,8 +216,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
     
     private void RemoveIKConstraints()
     {
-        if (objectDragged.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint))
-            characterAnimator.ClearHandsIK();
         if(objectDragged.TryGetComponent<IParentableObject>(out var parentableObject))
             parentableObject.RemoveParentObject();
         objectDragged.transform.position = isCollideWithWall
@@ -272,33 +229,18 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
             RemoveIKConstraints();
             objectDragged.TryGetComponent<IDraggable>(out var draggable);
             draggable.OnDrop();
-            if (arrowDashDirection.activeSelf)
-            {
-                
-                arrowDashDirection.SetActive(false);
-            }
             objectDragged.SetActive(true);
             objectDragged = null;
             AudioManager.Instance.PlayEffectPlayerDrop();
             interactableLayerMask = playerParametersSo.defaultInteractLayer;   
     }
-    
+
     private void OnStartThrowObject()
     {
-            if (objectDragged.TryGetComponent<IThrowable>(out var throwable))
-            {
-
-                arrowDashDirection.SetActive(true);
-            }
-            else
-            {
-                OnDropObject();
-            }
     }
-    
+
     private void OnExitThrowObject()
     {
-            arrowDashDirection.SetActive(false);
             if (objectDragged.TryGetComponent<IThrowable>(out var throwable) && !isPossibleThrow)
             {
                 RemoveIKConstraints();
