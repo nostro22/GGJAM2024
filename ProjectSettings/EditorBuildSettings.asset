@@ -18,6 +18,12 @@ EditorBuildSettings:
     path: Assets/Scenes/GameSelector.unity
     guid: e774116b19605e9409dbaa5d2ff5e9e3
   - enabled: 1
+    path: Assets/Scenes/MiniTrafic.unity
+    guid: 868076601a6696345bfb267b099a651b
+  - enabled: 1
+    path: Assets/Scenes/MiniFutball.unity
+    guid: 80efbd81a40394c46b815ca73368c177
+  - enabled: 1
     path: Assets/SimplePoly City - Low Poly Assets/Demo/SimplePoly City - Low Poly
       Assets_Demo Scene.unity
     guid: 7e6d3f4e5d896154ab4438845532ac3e
