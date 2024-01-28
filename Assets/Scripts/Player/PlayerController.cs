@@ -3,6 +3,7 @@ using System.Collections;
 using ScriptableObjects;
 using UI.Gameplay;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum MovementType
 {
@@ -14,9 +15,10 @@ public class PlayerController : MonoBehaviour,IThrowable
     [SerializeField] private PlayerParametersSO playerParameters;
     [SerializeField] private MovementType movementType;
     [SerializeField] private VisualIconMark visualIconGround;
-    [SerializeField] private VisualIconMark visualIconArrow;
     public Action OnDashEvent;
     public Action OnStunEvent;
+    public Action OnDeadEvent;
+    public Action OnAttackEvent;
     private bool inDash;
     public int IndexPlayer;
     private PlayerInputController inputController;
@@ -48,6 +50,9 @@ public class PlayerController : MonoBehaviour,IThrowable
         characterAnimator = GetComponentInChildren<CharacterAnimator>();
         OnDashEvent += characterAnimator.OnDashAnimation;
         OnStunEvent += characterAnimator.OnStunAnimation;
+        OnDeadEvent += characterAnimator.OnStunAnimation;
+        OnDeadEvent += OnDead;
+        OnAttackEvent += characterAnimator.OnAttackAnimation;
         characterController.enabled = true;
         UpdateMovement();
         EventsManager.OnDeactivateInputs.SubscribeMethod(OnDisableInputs);
@@ -65,18 +70,24 @@ public class PlayerController : MonoBehaviour,IThrowable
     public void SetColorPlayerBehaviour(Color color)
     {
         visualIconGround.SetColorIcon(color);
-        visualIconArrow.SetColorIcon(color);
     }
     public void OnEnableInputs()
     {
         inputController.OnMoveEvent += OnMove;
         inputController.OnDashEvent += OnDash;
+        inputController.OnInteractEvent += OnInputControllerOnOnInteractEvent;
+    }
+
+    private void OnInputControllerOnOnInteractEvent()
+    {
+        OnDeadEvent?.Invoke();
     }
 
     public void OnDisableInputs()
     {
         inputController.OnMoveEvent -= OnMove;
         inputController.OnDashEvent -= OnDash;
+        inputController.OnInteractEvent -=OnInputControllerOnOnInteractEvent;
         OnMove(Vector2.zero);
     }
     
@@ -121,7 +132,7 @@ public class PlayerController : MonoBehaviour,IThrowable
 
     private IEnumerator Dash()
     {
-        AudioManager.Instance.PlayEffectPlayerDash();
+        // AudioManager.Instance.PlayEffectPlayerDash();
         inDash = true;
         InThrow = inDash;
         OnDashEvent?.Invoke();
@@ -147,11 +158,11 @@ public class PlayerController : MonoBehaviour,IThrowable
         switch (movementType)
         {
             case MovementType.Normal:
-                characterAnimator.UpdateWalk(movement.magnitude);
+                characterAnimator.UpdateWalk(movement.magnitude != 0);
                 characterController.Move(movement * currentSpeed * Time.deltaTime);
                 break;
             case MovementType.OnlyRotate:
-                characterAnimator.UpdateWalk(0);
+                characterAnimator.UpdateWalk(false);
                 break;
         }
         
@@ -178,6 +189,8 @@ public class PlayerController : MonoBehaviour,IThrowable
         {
             Movement();
         }
+        
+        //Debug 
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -193,6 +206,27 @@ public class PlayerController : MonoBehaviour,IThrowable
                 rb.AddForceAtPosition(forceDirection, transform.position, ForceMode.Impulse);
             }
         }
+    }
+
+    private void OnDead()
+    {
+        characterAnimator.OnDeadAnimation();
+        LeanTween.moveLocal(characterAnimator.gameObject, characterAnimator.transform.up * 15, 1f).setEaseSpring();
+        LeanTween.rotateAround(characterAnimator.gameObject, Vector3.forward, 360,1f).setEaseSpring();
+        OnDisableInputs();
+        StartCoroutine(DisablePlayer());
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
+    IEnumerator DisablePlayer()
+    {
+        yield return new WaitForSeconds(2);
+        GameManager.Instance.UpdateGameState(GameState.GameCompleted);
+        gameObject.SetActive(false);
     }
 
     public bool InThrow { get; set; }

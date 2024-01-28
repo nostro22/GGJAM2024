@@ -44,11 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d45e60d6ae61f244fb539d9b4e3f5f41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterDatabase: {fileID: 11400000, guid: 9c5cd7db384123049a41fea18826296c, type: 2}
-  playerGameplayBehavoiur: {fileID: 0}
+  characterDatabase: {fileID: 11400000, guid: 780bd00534c1fd248877b339f91f055c, type: 2}
+  playerGameplayBehavoiur: {fileID: 9831256395531191, guid: 3718a6213c666014c812ccd44f3abd50, type: 3}
   spawnPoints:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  visualInteractableKey: {fileID: 0}

@@ -489,6 +489,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5805616191551012716, guid: eb5b6c3dd18201c49b8253253b2733fe, type: 3}
+      propertyPath: m_text
+      value: City Animals Deadmatch
+      objectReference: {fileID: 0}
     - target: {fileID: 6315073287201589845, guid: eb5b6c3dd18201c49b8253253b2733fe, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -616,6 +620,10 @@ PrefabInstance:
     - target: {fileID: 8485872566526434613, guid: eb5b6c3dd18201c49b8253253b2733fe, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8485872567407563619, guid: eb5b6c3dd18201c49b8253253b2733fe, type: 3}
+      propertyPath: m_text
+      value: City Animals Deadmatch
       objectReference: {fileID: 0}
     - target: {fileID: 8488836401675965779, guid: eb5b6c3dd18201c49b8253253b2733fe, type: 3}
       propertyPath: m_IsActive
