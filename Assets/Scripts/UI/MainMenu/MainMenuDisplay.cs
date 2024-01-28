@@ -6,14 +6,10 @@ public class MainMenuDisplay : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject startPanel;
     [SerializeField] private GameObject menuPanel;
-    [SerializeField] private GameObject selectCompanyPanel;
-    [SerializeField] private GameObject createNewCompanyPanel;
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private InputActionProperty joinActionProperty;
     private void Start()
     {
-        selectCompanyPanel.SetActive(false);
-        createNewCompanyPanel.SetActive(false);
         menuPanel.SetActive(true);
         optionsPanel.SetActive(false);
         startPanel.SetActive(false);
@@ -42,15 +38,9 @@ public class MainMenuDisplay : MonoBehaviour
 
     public void PlayButton()
     {
-        selectCompanyPanel.SetActive(true);
         menuPanel.SetActive(false);
     }
     
-    public void CreateNewCompanyButton()
-    {
-        createNewCompanyPanel.SetActive(true);
-        selectCompanyPanel.SetActive(false);
-    }
 
     public void Options()
     {
