@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class CharacterAnimator : MonoBehaviour, IParentObject
@@ -9,6 +8,8 @@ public class CharacterAnimator : MonoBehaviour, IParentObject
     private int ON_STUN = Animator.StringToHash("stun");
     private int IS_WALKING = Animator.StringToHash("move");
     private int ON_JUMP = Animator.StringToHash("jump");
+    private int ON_ATTACK = Animator.StringToHash("attack");
+    private int ON_DEAD = Animator.StringToHash("dead");
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -24,9 +25,14 @@ public class CharacterAnimator : MonoBehaviour, IParentObject
         animator.SetTrigger(ON_STUN);
     }
     
-    public void OnJumpAnimation()
+    public void OnDeadAnimation()
     {
-        animator.SetTrigger(ON_JUMP);
+        animator.SetBool(ON_DEAD,true);
+    }
+    
+    public void OnAttackAnimation()
+    {
+        animator.SetTrigger(ON_ATTACK);
     }
 
     public void UpdateWalk(bool value)

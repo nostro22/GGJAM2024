@@ -3,6 +3,7 @@ using System.Collections;
 using ScriptableObjects;
 using UI.Gameplay;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum MovementType
 {
@@ -14,10 +15,10 @@ public class PlayerController : MonoBehaviour,IThrowable
     [SerializeField] private PlayerParametersSO playerParameters;
     [SerializeField] private MovementType movementType;
     [SerializeField] private VisualIconMark visualIconGround;
-    [SerializeField] private VisualIconMark visualIconArrow;
     public Action OnDashEvent;
     public Action OnStunEvent;
-    public Action OnJumpEvent;
+    public Action OnDeadEvent;
+    public Action OnAttackEvent;
     private bool inDash;
     public int IndexPlayer;
     private PlayerInputController inputController;
@@ -49,7 +50,9 @@ public class PlayerController : MonoBehaviour,IThrowable
         characterAnimator = GetComponentInChildren<CharacterAnimator>();
         OnDashEvent += characterAnimator.OnDashAnimation;
         OnStunEvent += characterAnimator.OnStunAnimation;
-        OnJumpEvent += characterAnimator.OnStunAnimation;
+        OnDeadEvent += characterAnimator.OnStunAnimation;
+        OnDeadEvent += OnDead;
+        OnAttackEvent += characterAnimator.OnAttackAnimation;
         characterController.enabled = true;
         UpdateMovement();
         EventsManager.OnDeactivateInputs.SubscribeMethod(OnDisableInputs);
@@ -67,12 +70,12 @@ public class PlayerController : MonoBehaviour,IThrowable
     public void SetColorPlayerBehaviour(Color color)
     {
         visualIconGround.SetColorIcon(color);
-        visualIconArrow.SetColorIcon(color);
     }
     public void OnEnableInputs()
     {
         inputController.OnMoveEvent += OnMove;
         inputController.OnDashEvent += OnDash;
+        inputController.OnInteractEvent += () => OnDeadEvent?.Invoke();
     }
 
     public void OnDisableInputs()
@@ -123,7 +126,7 @@ public class PlayerController : MonoBehaviour,IThrowable
 
     private IEnumerator Dash()
     {
-        AudioManager.Instance.PlayEffectPlayerDash();
+        // AudioManager.Instance.PlayEffectPlayerDash();
         inDash = true;
         InThrow = inDash;
         OnDashEvent?.Invoke();
@@ -180,6 +183,8 @@ public class PlayerController : MonoBehaviour,IThrowable
         {
             Movement();
         }
+        
+        //Debug 
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -195,6 +200,19 @@ public class PlayerController : MonoBehaviour,IThrowable
                 rb.AddForceAtPosition(forceDirection, transform.position, ForceMode.Impulse);
             }
         }
+    }
+
+    private void OnDead()
+    {
+        characterAnimator.OnDeadAnimation();
+        OnDisableInputs();
+        StartCoroutine(DisablePlayer());
+    }
+
+    IEnumerator DisablePlayer()
+    {
+        yield return new WaitForSeconds(2);
+        gameObject.SetActive(false);
     }
 
     public bool InThrow { get; set; }

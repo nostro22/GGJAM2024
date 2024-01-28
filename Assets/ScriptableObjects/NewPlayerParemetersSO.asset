@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98ef3ccb2015414c961b96e7b00ecefa, type: 3}
   m_Name: NewPlayerParemetersSO
   m_EditorClassIdentifier: 
-  playerSpeed: 3
+  playerSpeed: 5
   durationDash: 0.2
   distanceDash: 2
-  jumpHeight: 1
+  jumpHeight: 3
   gravityValue: -9.81
   defaultInteractLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   defaultCleaningLayer:
     serializedVersion: 2
     m_Bits: 0
