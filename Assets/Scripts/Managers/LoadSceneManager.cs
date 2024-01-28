@@ -86,10 +86,7 @@ public enum ScenesIndexes
     BOOT,
     MAIN_MENU,
     CHARACTER_SELECT,
-    OFFICE,
+    SELECTGAME,
     GAMEPLAY,
-    LEVEL2,
-    LEVEL3,
-    LEVEL4,
     NONE
 }
