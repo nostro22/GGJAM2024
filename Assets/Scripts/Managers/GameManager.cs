@@ -10,9 +10,9 @@ public enum GameState {
 }
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject interactStarterPlayer;
-    [SerializeField] private GameObject pausePanel;
-    [SerializeField] private GameObject referencesKeyPausePanel;
+    // [SerializeField] private GameObject interactStarterPlayer;
+    // [SerializeField] private GameObject pausePanel;
+    // [SerializeField] private GameObject referencesKeyPausePanel;
     private GameState gameState = GameState.WaitingToStart;
     public static GameManager Instance { get; private set; }
 
@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
-        referencesKeyPausePanel.SetActive(false);
+        // referencesKeyPausePanel.SetActive(false);
         EventsManager.OnInteractEventToStartGame.SubscribeMethod(OnInteract);
         EventsManager.OnCountDownToEndLevelTime.SubscribeMethod((() =>
         {
@@ -46,38 +46,38 @@ public class GameManager : MonoBehaviour
     {
         if (gameState == GameState.GamePause)
         {
-            EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
+            // EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
             EventsManager.OnDeactivateInputs.Invoke();
             Time.timeScale = 0;
         }
         if (gameState == GameState.WaitingToStart)
         {
             Time.timeScale = 1;
-            interactStarterPlayer.SetActive(true);
+            // interactStarterPlayer.SetActive(true);
         }
         else if (gameState == GameState.CountdownToStart)
         {
             Time.timeScale = 1;
-            interactStarterPlayer.SetActive(false);
+            // interactStarterPlayer.SetActive(false);
         }
         else if (gameState == GameState.GamePlaying)
         {
             Time.timeScale = 1;
-            EventsManager.OnPauseGame.SubscribeMethod(OnPauseGameInteract);
+            // EventsManager.OnPauseGame.SubscribeMethod(OnPauseGameInteract);
             EventsManager.OnActivateInputs.Invoke();
             EventsManager.OnStartGame.Invoke();
         }
         else if (gameState == GameState.GameCompleted)
         {
             Time.timeScale = 1;
-            EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
+            // EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
             EventsManager.OnDeactivateInputs.Invoke();
             EventsManager.OnEndGame.Invoke();
         }
         else if (gameState == GameState.GameFailure)
         {
             Time.timeScale = 1;
-            EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
+            // EventsManager.OnPauseGame.RemoveOneShotMethod(OnPauseGameInteract);
             EventsManager.OnDeactivateInputs.Invoke();
             EventsManager.OnEndGame.Invoke();
         }
@@ -86,13 +86,13 @@ public class GameManager : MonoBehaviour
     private void OnInteract() {
         if (gameState == GameState.WaitingToStart) {
 
-            interactStarterPlayer.SetActive(false);
+            // interactStarterPlayer.SetActive(false);
             SetPlayerReady();
         }
     }
     
     private void SetPlayerReady() {
-        gameState = GameState.CountdownToStart;
+        gameState = GameState.GamePlaying;
         OnValueChanged();
     }
     
@@ -112,14 +112,14 @@ public class GameManager : MonoBehaviour
         return gameState == GameState.WaitingToStart;
     }
     
-    public void OnPauseGameInteract()
-    {
-        if(IsGameOver()) return;
-        referencesKeyPausePanel.SetActive(!pausePanel.activeSelf);
-        pausePanel.SetActive(!pausePanel.activeSelf);
-        gameState = !pausePanel.activeSelf ? GameState.GamePlaying : GameState.GamePause;
-        OnValueChanged();
-    }
+    // public void OnPauseGameInteract()
+    // {
+    //     if(IsGameOver()) return;
+    //     // referencesKeyPausePanel.SetActive(!pausePanel.activeSelf);
+    //     pausePanel.SetActive(!pausePanel.activeSelf);
+    //     gameState = !pausePanel.activeSelf ? GameState.GamePlaying : GameState.GamePause;
+    //     OnValueChanged();
+    // }
     
 
     public void UpdateGameState(GameState gameGameState)

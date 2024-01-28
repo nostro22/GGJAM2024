@@ -98,19 +98,12 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
 
     private void OnUse()
     {
-        if (objectDragged == null) return;
-        if (objectDragged.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint))
-            characterAnimator.UpdateParentIK(targetConstraint,targetConstraint.isUssable ? 0: 1);
-        if(targetConstraint.isUssable) characterAnimator.UpdateToolLayerUse(targetConstraint.HandsPoserSO.animationLayerUse,1);
+        
     }
 
     private void OnCancelUse()
     {
-
-        if (objectDragged == null) return;
-        if (objectDragged.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint)){}
-            characterAnimator.UpdateParentIK(targetConstraint,1);
-        characterAnimator.UpdateToolLayerUse(targetConstraint.HandsPoserSO.animationLayerUse,0);
+        
     }
     
     private void StartThrow()
@@ -242,9 +235,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
     {
         if (objectToDrag.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint))
         {
-            characterAnimator.UpdateParentIK(targetConstraint,1);
-            if (targetConstraint.isUseAnimationEvent)
-                characterAnimator.AddAnimationActionEvent(targetConstraint.animationEventAction,targetConstraint.time,targetConstraint.animationName);
             if (objectToDrag.TryGetComponent<IParentableObject>(out var parentableObject))
                 parentableObject.SetParentObject(characterAnimator.gameObject);
         }
@@ -257,8 +247,6 @@ public class PlayerInteractableController : MonoBehaviour,IParentObject
     
     private void RemoveIKConstraints()
     {
-        if (objectDragged.TryGetComponent<AnimationTargetConstraintIK>(out var targetConstraint))
-            characterAnimator.ClearHandsIK();
         if(objectDragged.TryGetComponent<IParentableObject>(out var parentableObject))
             parentableObject.RemoveParentObject();
         objectDragged.transform.position = isCollideWithWall

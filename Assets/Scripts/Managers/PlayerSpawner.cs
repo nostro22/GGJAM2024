@@ -1,5 +1,4 @@
 using System.Collections;
-using Cinemachine;
 using UI.Gameplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,9 +13,8 @@ public class PlayerSpawner : MonoBehaviour
     [Header("Players Spawn Points")]
     [SerializeField] private Transform[] spawnPoints;
     private int indexPlayer = 0;
-    private CinemachineTargetGroup targetGroup;
-    [Header("Initial Reference")]
-    [SerializeField] private VisualInteractableKey visualInteractableKey;
+    // [Header("Initial Reference")]
+    // [SerializeField] private VisualInteractableKey visualInteractableKey;
     
     private void Awake()
     {
@@ -28,8 +26,6 @@ public class PlayerSpawner : MonoBehaviour
         {
             Instance = this;
         }
-
-        targetGroup = GameObject.Find("Target Group").GetComponent<CinemachineTargetGroup>();
     }
 
     private IEnumerator Start()
@@ -46,7 +42,7 @@ public class PlayerSpawner : MonoBehaviour
     {
         if (obj.user.id == 1)
         {
-            visualInteractableKey.Show();
+            // visualInteractableKey.Show();
             obj.GetComponent<PlayerInputController>().OnInteractEvent += OnFirstInteract;
         }
         obj.SwitchCurrentActionMap("Gameplay");
@@ -80,7 +76,6 @@ public class PlayerSpawner : MonoBehaviour
             var characterInstantiate = Instantiate(character.GameplayPrefab,Vector3.zero, Quaternion.identity);
             characterInstantiate.transform.SetParent(playerBehaviour.transform,false);
             indexPlayer++;
-            SetCameraToPlayer(playerBehaviour.transform);
             var colorPlayer = UtilsPlayer.GetColoByIndex(indexPlayer);
             playerBehaviour.GetComponent<PlayerController>().SetIndexPlayer(indexPlayer);
             playerBehaviour.GetComponent<PlayerController>().SetColorPlayerBehaviour(colorPlayer);
@@ -111,12 +106,6 @@ public class PlayerSpawner : MonoBehaviour
     private void OnPauseInteract()
     {
         EventsManager.OnPauseGame.Invoke();
-    }
-
-
-    private void SetCameraToPlayer(Transform target)
-    {
-        targetGroup.AddMember(target,5,5);
     }
 }
 

@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour,IThrowable
     [SerializeField] private VisualIconMark visualIconArrow;
     public Action OnDashEvent;
     public Action OnStunEvent;
+    public Action OnJumpEvent;
     private bool inDash;
     public int IndexPlayer;
     private PlayerInputController inputController;
@@ -48,6 +49,7 @@ public class PlayerController : MonoBehaviour,IThrowable
         characterAnimator = GetComponentInChildren<CharacterAnimator>();
         OnDashEvent += characterAnimator.OnDashAnimation;
         OnStunEvent += characterAnimator.OnStunAnimation;
+        OnJumpEvent += characterAnimator.OnStunAnimation;
         characterController.enabled = true;
         UpdateMovement();
         EventsManager.OnDeactivateInputs.SubscribeMethod(OnDisableInputs);
@@ -147,11 +149,11 @@ public class PlayerController : MonoBehaviour,IThrowable
         switch (movementType)
         {
             case MovementType.Normal:
-                characterAnimator.UpdateWalk(movement.magnitude);
+                characterAnimator.UpdateWalk(movement.magnitude != 0);
                 characterController.Move(movement * currentSpeed * Time.deltaTime);
                 break;
             case MovementType.OnlyRotate:
-                characterAnimator.UpdateWalk(0);
+                characterAnimator.UpdateWalk(false);
                 break;
         }
         
