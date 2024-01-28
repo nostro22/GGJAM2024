@@ -50,7 +50,7 @@ public class CharacterSelectDisplay : MonoBehaviour
     {
         foreach (var playerCard in playerCards)
             playerCard.RemoveInputCard();
-        LoadSceneManager.Instance.LoadNewScene(ScenesIndexes.OFFICE);
+        LoadSceneManager.Instance.LoadNewScene(ScenesIndexes.SELECTGAME);
     }
 
     private void OnDestroy()
